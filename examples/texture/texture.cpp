@@ -1,0 +1,95 @@
+#include "gloom/common/gloom.h"
+#include <iostream>
+#include <array>
+#include <vector>
+
+namespace GL = Gloom;
+
+std::vector<uint32_t> CreateTexture(int32_t width, int32_t height) {
+  std::vector<uint32_t> data(width * height);
+  for (auto x = 0; x < width; x++) {
+    for (auto y = 0; y < height; y++) {
+      data[y * width + x] = GL::GetRGBA(255, 0, 0, 255);
+    }
+  }
+  return data;
+}
+
+int main() {
+
+  GL::GLFWWindow window("Texture", 800, 600);
+
+  GL::Descriptor vertex_array;
+  GL::Descriptor vertex_buffer, index_buffer;
+  GL::Descriptor texture;
+
+  auto texture_image = CreateTexture(800, 600);
+
+  GL::CreateTexture(texture, GL::TextureTarget::TEXTURE_2D);
+  GL::CreateTextureStorage(texture, 1, 800, 600, GL::InternalFormat::RGBA8);
+  GL::TextureSubImage<uint32_t>(texture, 800, 600, GL::PixelFormat::RGBA, GL::PixelType::UNSIGNED_BYTE, texture_image, 0, 0, 0);
+
+  GL::CreateVertexArray(vertex_array);
+  GL::CreateBuffer(vertex_buffer);
+  GL::CreateBuffer(index_buffer);
+  GL::SetVertexArrayVertexBuffer(vertex_array, vertex_buffer, 0, 28, 0);
+  GL::SetVertexArrayElementBuffer(vertex_array, index_buffer);
+
+  GL::SetAttributeFormat(vertex_array, 0, 2, GL::VertexAttributeType::FLOAT, 0, false);
+  GL::SetAttributeFormat(vertex_array, 1, 3, GL::VertexAttributeType::FLOAT, 8, false);
+  GL::SetAttributeFormat(vertex_array, 2, 2, GL::VertexAttributeType::FLOAT, 20, false);
+
+  GL::SetAttributeBinding(vertex_array, 0, 0);
+  GL::SetAttributeBinding(vertex_array, 1, 0);
+  GL::SetAttributeBinding(vertex_array, 2, 0);
+
+  GL::EnableVertexArrayAttribute(vertex_array, 0);
+  GL::EnableVertexArrayAttribute(vertex_array, 1);
+  GL::EnableVertexArrayAttribute(vertex_array, 2);
+
+  auto program = GL::CreateProgram();
+  auto vertex_shader = GL::CreateShader(GL::ShaderType::VERTEX);
+  auto fragment_shader = GL::CreateShader(GL::ShaderType::FRAGMENT);
+
+  // clang-format off
+  std::array data{
+    -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+    +0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 2.0f, 0.0f,
+    +0.5f, +0.5f, 0.0f, 0.0f, 0.0f, 2.0f, 2.0f,
+    -0.5f, +0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 2.0f
+  };
+  // clang-format on
+
+  std::array indices{0, 1, 2, 2, 3, 0};
+
+  GL::CreateBufferStorage<float>(vertex_buffer, GL::BufferStorageMask::DYNAMIC_STORAGE_BIT, data);
+  GL::CreateBufferStorage<int32_t>(index_buffer, GL::BufferStorageMask::DYNAMIC_STORAGE_BIT, indices);
+  GL::ShaderSource(vertex_shader, GL::GetPlaneTextureVertexShader());
+  GL::ShaderSource(fragment_shader, GL::GetPlaneTextureFragmentShader());
+  GL::CompileShaders(vertex_shader, fragment_shader);
+  GL::AttachShaders(program, vertex_shader, fragment_shader);
+  GL::LinkProgram(program);
+
+  auto texture_location = GL::GetUniformLocation(program, "u_texture");
+
+  while (window.ShouldClose() == false) {
+    window.PollEvents();
+
+    auto size = window.GetSize();
+
+    GL::SetViewport(0, 0, size.width_, size.height_);
+
+    GL::SetClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    GL::Clear(Gloom::ClearBufferMask::COLOR_BUFFER_BIT);
+
+    GL::BindVertexArray(vertex_array);
+    GL::BindTextureUnit(texture, 0);
+    GL::UseProgram(program);
+    GL::SetUniform(texture_location, 0);
+    GL::DrawElements(0, 6, GL::DrawElementsType::UNSIGNED_INT, GL::PrimitiveType::TRIANGLES);
+
+    window.Update();
+  }
+
+  return 0;
+}
