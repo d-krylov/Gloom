@@ -1,8 +1,10 @@
 #ifndef GRAPHICS_WRAPPERS_H
 #define GRAPHICS_WRAPPERS_H
 
-#include "graphics_types.h"
+#include "gloom/graphics/graphics_types.h"
+#include "gloom/mathematics/mathematics_types.h"
 #include <string>
+#include <span>
 
 namespace Gloom {
 
@@ -21,6 +23,8 @@ void SetPatchParameter(PatchParameterName patch_parameter, int32_t value);
 void SetPolygonMode(PolygonMode mode);
 void SetBlendEquation(BlendEquationMode mode);
 void DepthMask(bool enable_write);
+void FrontFace(FrontFaceDirection direction);
+void CullFace(TriangleFace triangle_face);
 
 // VERTEX ARRAY
 void BindVertexArray(Descriptor &vertex_array);
@@ -37,6 +41,7 @@ void SetAttributeFormat(Descriptor &vao, uint32_t index, int32_t size, VertexAtt
 
 // BUFFER
 void CreateBuffer(Descriptor &buffer);
+void CreateBuffers(std::span<Descriptor> buffers);
 void BindBuffer(Descriptor &buffer, BufferStorageTarget target);
 void CreateEmptyBufferStorage(Descriptor &buffer, BufferStorageMask storage_mask, int64_t size);
 bool UnmapBuffer(Descriptor &buffer);
@@ -55,7 +60,7 @@ void DeleteShader(Descriptor &shader);
 void DispatchCompute(uint32_t num_groups_x, uint32_t num_groups_y, uint32_t num_groups_z);
 void GetShaderParameter(Descriptor &shader, ShaderParameterName parameter, int32_t &result);
 void GetProgramParameter(Descriptor &program, ProgramProperty property, int32_t &result);
-int32_t GetUniformLocation(Descriptor &program, std::string_view name);
+void GetProgramInterface(Descriptor &program, ProgramInterface program_interface, ProgramInterfaceParameterName name, int32_t &result);
 void SetUniform(int32_t location, float value);
 void SetUniform(int32_t location, int32_t value);
 void SetUniform(int32_t location, uint32_t value);
@@ -68,6 +73,20 @@ void SetUniform(int32_t location, int32_t v0, int32_t v1, int32_t v2, int32_t v3
 void SetUniform(int32_t location, uint32_t v0, uint32_t v1);
 void SetUniform(int32_t location, uint32_t v0, uint32_t v1, uint32_t v2);
 void SetUniform(int32_t location, uint32_t v0, uint32_t v1, uint32_t v2, uint32_t v3);
+void SetUniform(int32_t location, std::span<const Vector2f> value);
+void SetUniform(int32_t location, std::span<const Vector2i> value);
+void SetUniform(int32_t location, std::span<const Vector2u> value);
+void SetUniform(int32_t location, std::span<const Vector3f> value);
+void SetUniform(int32_t location, std::span<const Vector3i> value);
+void SetUniform(int32_t location, std::span<const Vector3u> value);
+void SetUniform(int32_t location, std::span<const Vector4f> value);
+void SetUniform(int32_t location, std::span<const Vector4i> value);
+void SetUniform(int32_t location, std::span<const Vector4u> value);
+void SetUniform(int32_t location, std::span<const Matrix4f> value, bool transpose);
+int32_t GetUniformLocation(Descriptor &program, std::string_view name);
+std::string GetProgramResourceName(Descriptor &program, ProgramInterface interface, uint32_t index, uint32_t name_size);
+std::vector<int32_t> GetProgramResource(Descriptor &program, ProgramInterface interface, uint32_t index,
+                                        std::span<const ProgramResourceProperty> properties);
 
 // TEXTURE
 void DeleteTexture(Descriptor &texture);
@@ -86,19 +105,24 @@ void BindFramebuffer(Descriptor &framebuffer, FramebufferTarget framebuffer_targ
 void FramebufferAttach(Descriptor &framebuffer, Descriptor &texture, FramebufferAttachment point, int32_t level);
 void FramebufferAttach(Descriptor &framebuffer, Descriptor &renderbuffer, FramebufferAttachment point, RenderbufferTarget target);
 void FramebufferAttach(Descriptor &framebuffer, Descriptor &texture, FramebufferAttachment point, int32_t level, int32_t layer);
+FramebufferStatus CheckFramebufferStatus(Descriptor &framebuffer, FramebufferTarget framebuffer_target);
 
 // RENDERBUFFER
 void CreateRenderbuffer(Descriptor &renderbuffer);
 void DeleteRenderbuffer(Descriptor &renderbuffer);
 void BindRenderbuffer(Descriptor &renderbuffer);
+void UnbindFramebuffer(FramebufferTarget framebuffer_target);
 void CreateRenderbufferStorage(Descriptor &renderbuffer, InternalFormat format, int32_t width, int32_t height);
 void CreateRenderbufferStorageMultisample(Descriptor &renderbuffer, InternalFormat format, int32_t width, int32_t height, int32_t samples);
 
 // DRAW
 void DrawArrays(int32_t first, int32_t count, PrimitiveType primitive_type);
-void DrawElements(int32_t first, int32_t count, DrawElementsType index_type, PrimitiveType primitive_type);
+void DrawElements(int32_t first, int32_t count, int64_t indices, DrawElementsType index_type, PrimitiveType primitive_type);
+void DrawElementsBaseVertex(int32_t count, int64_t indices, int32_t base, DrawElementsType index_type, PrimitiveType primitive_type);
 void DrawArraysInstanced(int32_t indices, int32_t instances, int32_t first, PrimitiveType primitive_type);
+void DrawArraysIndirect(int64_t commands_offset_in_bytes, PrimitiveType primitive_type);
 
+// BARRIER
 void MemoryBarrier(MemoryBarrierMask barrier_mask);
 void MemoryBarrierByRegion(MemoryBarrierRegionMask barrier_mask);
 

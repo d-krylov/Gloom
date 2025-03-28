@@ -9,7 +9,7 @@ std::vector<uint32_t> CreateTexture(int32_t width, int32_t height) {
   std::vector<uint32_t> data(width * height);
   for (auto x = 0; x < width; x++) {
     for (auto y = 0; y < height; y++) {
-      data[y * width + x] = GL::GetRGBA(255, 0, 0, 255);
+      data[y * width + x] = GL::GetRGBA(x % 200, y % 200, 0, 255);
     }
   }
   return data;
@@ -30,8 +30,8 @@ int main() {
   GL::TextureSubImage<uint32_t>(texture, 800, 600, GL::PixelFormat::RGBA, GL::PixelType::UNSIGNED_BYTE, texture_image, 0, 0, 0);
 
   GL::CreateVertexArray(vertex_array);
-  GL::CreateBuffer(vertex_buffer);
-  GL::CreateBuffer(index_buffer);
+
+  GL::CreateBuffers(vertex_buffer, index_buffer);
   GL::SetVertexArrayVertexBuffer(vertex_array, vertex_buffer, 0, 28, 0);
   GL::SetVertexArrayElementBuffer(vertex_array, index_buffer);
 
@@ -54,13 +54,13 @@ int main() {
   // clang-format off
   std::array data{
     -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-    +0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 2.0f, 0.0f,
-    +0.5f, +0.5f, 0.0f, 0.0f, 0.0f, 2.0f, 2.0f,
-    -0.5f, +0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 2.0f
+    +0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+    +0.5f, +0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+    -0.5f, +0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f
   };
   // clang-format on
 
-  std::array indices{0, 1, 2, 2, 3, 0};
+  std::array indices{0, 1, 2, 2, 3, 0, 0, 1, 2};
 
   GL::CreateBufferStorage<float>(vertex_buffer, GL::BufferStorageMask::DYNAMIC_STORAGE_BIT, data);
   GL::CreateBufferStorage<int32_t>(index_buffer, GL::BufferStorageMask::DYNAMIC_STORAGE_BIT, indices);
@@ -69,6 +69,23 @@ int main() {
   GL::CompileShaders(vertex_shader, fragment_shader);
   GL::AttachShaders(program, vertex_shader, fragment_shader);
   GL::LinkProgram(program);
+
+  int32_t active_resources{0};
+  GL::GetProgramInterface(program, GL::ProgramInterface::PROGRAM_INPUT, GL::ProgramInterfaceParameterName::ACTIVE_RESOURCES,
+                          active_resources);
+  std::cout << active_resources << std::endl;
+
+  for (auto i = 0; i < active_resources; i++) {
+
+    std::array properties{GL::ProgramResourceProperty::NAME_LENGTH, GL::ProgramResourceProperty::TYPE,
+                          GL::ProgramResourceProperty::LOCATION};
+
+    auto ret = GL::GetProgramResource(program, GL::ProgramInterface::PROGRAM_INPUT, i, properties);
+
+    auto name = GL::GetProgramResourceName(program, GL::ProgramInterface::PROGRAM_INPUT, i, ret[0]);
+
+    std::cout << name << std::endl;
+  }
 
   auto texture_location = GL::GetUniformLocation(program, "u_texture");
 
@@ -86,7 +103,7 @@ int main() {
     GL::BindTextureUnit(texture, 0);
     GL::UseProgram(program);
     GL::SetUniform(texture_location, 0);
-    GL::DrawElements(0, 6, GL::DrawElementsType::UNSIGNED_INT, GL::PrimitiveType::TRIANGLES);
+    GL::DrawElements(0, 6, 3, GL::DrawElementsType::UNSIGNED_INT, GL::PrimitiveType::TRIANGLES);
 
     window.Update();
   }

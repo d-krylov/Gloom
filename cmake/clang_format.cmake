@@ -12,7 +12,7 @@ function(add_clang_format_target TARGET_NAME EXCLUDE_FROM_FORMAT)
 
   file(GLOB_RECURSE SOURCES_FOR_FORMAT 
     RELATIVE "${PROJECT_SOURCE_DIR}"  
-    "*.cpp" "*.h" "*.ipp" ".def"
+    "*.cpp" "*.h" "*.ipp" "*.def"
   )
 
   foreach(EXCLUDE_DIR ${EXCLUDE_FROM_FORMAT})

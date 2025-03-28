@@ -63,6 +63,14 @@ void DepthMask(bool enable_write) {
   GL_CALL(glDepthMask, enable_write);
 }
 
+void FrontFace(FrontFaceDirection direction) {
+  GL_CALL(glFrontFace, std::to_underlying(direction));
+}
+
+void CullFace(TriangleFace triangle_face) {
+  GL_CALL(glCullFace, std::to_underlying(triangle_face));
+}
+
 // TEXTURE
 
 void CreateTexture(Descriptor &texture, TextureTarget target) {
@@ -101,6 +109,10 @@ void SetTextureParameter(Descriptor &texture, TextureParameterName parameter, in
 
 void CreateBuffer(Descriptor &buffer) {
   GL_CALL(glCreateBuffers, 1, &buffer);
+}
+
+void CreateBuffers(std::span<Descriptor> buffers) {
+  GL_CALL(glCreateBuffers, buffers.size(), buffers.data());
 }
 
 void DeleteBuffer(Descriptor &buffer) {
@@ -178,6 +190,24 @@ void GetProgramParameter(Descriptor &program, ProgramProperty property, int32_t 
   GL_CALL(glGetProgramiv, program, std::to_underlying(property), &result);
 }
 
+void GetProgramInterface(Descriptor &program, ProgramInterface program_interface, ProgramInterfaceParameterName name, int32_t &result) {
+  GL_CALL(glGetProgramInterfaceiv, program, std::to_underlying(program_interface), std::to_underlying(name), &result);
+}
+
+std::vector<int32_t> GetProgramResource(Descriptor &program, ProgramInterface interface, uint32_t index,
+                                        std::span<const ProgramResourceProperty> properties) {
+  std::vector<int32_t> result(properties.size());
+  GL_CALL(glGetProgramResourceiv, program, std::to_underlying(interface), index, properties.size(), (const GLenum *)properties.data(),
+          properties.size(), nullptr, result.data());
+  return result;
+}
+
+std::string GetProgramResourceName(Descriptor &program, ProgramInterface interface, uint32_t index, uint32_t name_size) {
+  std::string name(name_size, ' ');
+  GL_CALL(glGetProgramResourceName, program, std::to_underlying(interface), index, name_size, nullptr, name.data());
+  return name;
+}
+
 int32_t GetUniformLocation(Descriptor &program, std::string_view name) {
   return GL_CALL(glGetUniformLocation, program, name.data());
 }
@@ -230,10 +260,54 @@ void SetUniform(int32_t location, uint32_t v0, uint32_t v1, uint32_t v2, uint32_
   GL_CALL(glUniform4ui, location, v0, v1, v2, v3);
 }
 
+void SetUniform(int32_t location, std::span<const Vector2f> value) {
+  GL_CALL(glUniform2fv, location, value.size(), (const float *)value.data());
+}
+
+void SetUniform(int32_t location, std::span<const Vector3f> value) {
+  GL_CALL(glUniform3fv, location, value.size(), (const float *)value.data());
+}
+
+void SetUniform(int32_t location, std::span<const Vector4f> value) {
+  GL_CALL(glUniform4fv, location, value.size(), (const float *)value.data());
+}
+
+void SetUniform(int32_t location, std::span<const Vector2i> value) {
+  GL_CALL(glUniform2iv, location, value.size(), (const int32_t *)value.data());
+}
+
+void SetUniform(int32_t location, std::span<const Vector3i> value) {
+  GL_CALL(glUniform3iv, location, value.size(), (const int32_t *)value.data());
+}
+
+void SetUniform(int32_t location, std::span<const Vector4i> value) {
+  GL_CALL(glUniform4iv, location, value.size(), (const int32_t *)value.data());
+}
+
+void SetUniform(int32_t location, std::span<const Vector2u> value) {
+  GL_CALL(glUniform2uiv, location, value.size(), (const uint32_t *)value.data());
+}
+
+void SetUniform(int32_t location, std::span<const Vector3u> value) {
+  GL_CALL(glUniform3uiv, location, value.size(), (const uint32_t *)value.data());
+}
+
+void SetUniform(int32_t location, std::span<const Vector4u> value) {
+  GL_CALL(glUniform4uiv, location, value.size(), (const uint32_t *)value.data());
+}
+
+void SetUniformMatrix44(int32_t location, std::span<const Matrix4f> value, bool transpose) {
+  GL_CALL(glUniformMatrix4fv, location, value.size(), transpose, (const float *)value.data());
+}
+
 // FRAMEBUFFER
 
 void CreateFramebuffer(Descriptor &framebuffer) {
   GL_CALL(glCreateFramebuffers, 1, &framebuffer);
+}
+
+void UnbindFramebuffer(FramebufferTarget framebuffer_target) {
+  GL_CALL(glBindFramebuffer, std::to_underlying(framebuffer_target), 0u);
 }
 
 void BindFramebuffer(Descriptor &framebuffer, FramebufferTarget framebuffer_target) {
@@ -254,6 +328,11 @@ void FramebufferAttach(Descriptor &framebuffer, Descriptor &texture, Framebuffer
 
 void DeleteFramebuffer(Descriptor &framebuffer) {
   GL_CALL(glDeleteFramebuffers, 1, &framebuffer);
+}
+
+FramebufferStatus CheckFramebufferStatus(Descriptor &framebuffer, FramebufferTarget framebuffer_target) {
+  auto status = GL_CALL(glCheckNamedFramebufferStatus, framebuffer, std::to_underlying(framebuffer_target));
+  return static_cast<FramebufferStatus>(status);
 }
 
 // RENDERBUFFER
@@ -334,9 +413,19 @@ void DrawArraysInstanced(int32_t indices, int32_t instances, int32_t first, Prim
   GL_CALL(glDrawArraysInstanced, std::to_underlying(primitive_type), first, indices, instances);
 }
 
-void DrawElements(int32_t first, int32_t count, DrawElementsType index_type, PrimitiveType primitive_type) {
-  GL_CALL(glDrawElements, std::to_underlying(primitive_type), count, std::to_underlying(index_type), nullptr);
+void DrawElements(int32_t first, int32_t count, int64_t indices_in_bytes, DrawElementsType index_type, PrimitiveType primitive_type) {
+  GL_CALL(glDrawElements, std::to_underlying(primitive_type), count, std::to_underlying(index_type), (const void *)indices_in_bytes);
 }
+
+void DrawElementsBaseVertex(int32_t count, int64_t indices, int32_t base, DrawElementsType index_type, PrimitiveType primitive_type) {
+  GL_CALL(glDrawElementsBaseVertex, std::to_underlying(primitive_type), count, std::to_underlying(index_type), (const void *)indices, base);
+}
+
+void DrawArraysIndirect(int64_t commands_offset_in_bytes, PrimitiveType primitive_type) {
+  GL_CALL(glDrawArraysIndirect, std::to_underlying(primitive_type), (const void *)commands_offset_in_bytes);
+}
+
+// BARRIER
 
 void MemoryBarrier(MemoryBarrierMask barrier_mask) {
   GL_CALL(glMemoryBarrier, std::to_underlying(barrier_mask));

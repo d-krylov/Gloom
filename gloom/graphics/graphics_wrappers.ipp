@@ -1,8 +1,6 @@
 #ifndef GRAPHICS_WRAPPERS_IPP
 #define GRAPHICS_WRAPPERS_IPP
 
-#include <span>
-
 namespace Gloom {
 
 template <typename F, typename... ARGS> decltype(auto) GL_CALL(F &&function, ARGS &&...arguments) {
@@ -14,21 +12,13 @@ template <typename F, typename... ARGS> decltype(auto) GL_CALL(F &&function, ARG
   }
 }
 
-template <typename... T> inline void Enable(T... capabilities) {
-  (Enable(capabilities), ...);
-}
-
-template <typename... T> inline void Disable(T... capabilities) {
-  (Disable(capabilities), ...);
-}
-
-template <typename... T> inline void CompileShaders(T &...shaders) {
-  (CompileShader(shaders), ...);
-}
-
-template <typename... T> inline void AttachShaders(Descriptor program, T &...shaders) {
-  (AttachShader(program, shaders), ...);
-}
+// clang-format off
+template <typename... T> inline void Enable(T... capabilities) { (Enable(capabilities), ...); }
+template <typename... T> inline void Disable(T... capabilities) { (Disable(capabilities), ...); }
+template <typename... T> inline void CompileShaders(T &...shaders) { (CompileShader(shaders), ...); }
+template <typename... T> inline void CreateBuffers(T &...buffers) { (CreateBuffer(buffers), ...); }
+template <typename... T> inline void AttachShaders(Descriptor program, T &...shaders) { (AttachShader(program, shaders), ...); }
+// clang-format on
 
 template <typename T = std::byte> inline T *MapBuffer(Descriptor &buffer, int64_t offset, int64_t size, MapBufferAccessMask map_access) {
   auto mapped_buffer = GL_CALL(glMapNamedBufferRange, buffer, offset, size, std::to_underlying(map_access));

@@ -9,11 +9,24 @@ set(CMAKE_CXX_EXTENSIONS ON)
 find_package(glfw3 REQUIRED)
 find_package(OpenGL REQUIRED)
 
-include(cmake/clang_format.cmake)
+include(cmake/libraries.cmake)
 
-add_clang_format_target(format "build;external")
+FetchContent_MakeAvailable(linalg)
 
-set(CMAKE_BUILD_TYPE RelWithDebInfo)
+if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+
+  set(CMAKE_BUILD_TYPE RelWithDebInfo)
+  
+  include(cmake/clang_format.cmake)
+
+  add_clang_format_target(format "build;external")
+
+  add_subdirectory(examples)
+
+else()
+
+  set(CMAKE_BUILD_TYPE Release)
+
+endif()
 
 add_subdirectory(gloom)
-add_subdirectory(examples)

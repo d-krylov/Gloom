@@ -13,6 +13,8 @@ enum class ErrorCode {
 #include "graphics_types.def"
 };
 
+// PROGRAM
+
 enum class ShaderType : GLenum {
 #define SHADER_TYPE(NAME) NAME = GL_##NAME##_SHADER,
 #include "graphics_types.def"
@@ -25,6 +27,21 @@ enum class ProgramProperty {
 
 enum class ShaderParameterName {
 #define SHADER_PARAMETER_NAME(NAME) NAME = GL_##NAME,
+#include "graphics_types.def"
+};
+
+enum class ProgramInterface : GLenum {
+#define PROGRAM_INTERFACE(NAME) NAME = GL_##NAME,
+#include "graphics_types.def"
+};
+
+enum class ProgramInterfaceParameterName : GLenum {
+#define PROGRAM_INTERFACE_PARAMETER_NAME(NAME) NAME = GL_##NAME,
+#include "graphics_types.def"
+};
+
+enum class ProgramResourceProperty : GLenum {
+#define PROGRAM_RESOURCE_PROPERTY(NAME) NAME = GL_##NAME,
 #include "graphics_types.def"
 };
 
@@ -94,7 +111,7 @@ enum class TextureTarget : GLenum {
 };
 
 enum class InternalFormat : GLenum {
-#define INTERNAL_FORMAT(NAME, BASE) NAME = GL_##NAME,
+#define INTERNAL_FORMAT(NAME, BASE, R, G, B, A) NAME = GL_##NAME,
 #include "graphics_types.def"
 };
 
@@ -196,13 +213,34 @@ enum class PatchParameterName : GLenum {
 #include "graphics_types.def"
 };
 
+enum class FrontFaceDirection : GLenum {
+#define PATCH_PARAMETERFRONT_FACE_DIRECTION_NAME(NAME) NAME = GL_##NAME,
+#include "graphics_types.def"
+};
+
 ALLOW_BITMASK_ENUM(ClearBufferMask);
 ALLOW_BITMASK_ENUM(BufferStorageMask);
 ALLOW_BITMASK_ENUM(MapBufferAccessMask);
 ALLOW_BITMASK_ENUM(MemoryBarrierMask);
 ALLOW_BITMASK_ENUM(MemoryBarrierRegionMask);
 
+struct DrawArraysIndirectCommand {
+  uint32_t count;
+  uint32_t instance_count;
+  uint32_t first;
+  uint32_t base_instance;
+};
+
+struct DrawElementsIndirectCommand {
+  uint32_t count;
+  uint32_t instance_count;
+  uint32_t first_index;
+  int32_t base_vertex;
+  uint32_t base_instance;
+};
+
 uint32_t GetRGBA(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha);
+uint32_t GetDrawElementsTypeSize(DrawElementsType type);
 
 } // namespace Gloom
 
