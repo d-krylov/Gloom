@@ -73,16 +73,16 @@ void SetUniform(int32_t location, int32_t v0, int32_t v1, int32_t v2, int32_t v3
 void SetUniform(int32_t location, uint32_t v0, uint32_t v1);
 void SetUniform(int32_t location, uint32_t v0, uint32_t v1, uint32_t v2);
 void SetUniform(int32_t location, uint32_t v0, uint32_t v1, uint32_t v2, uint32_t v3);
-void SetUniform(int32_t location, std::span<const Vector2f> value);
-void SetUniform(int32_t location, std::span<const Vector2i> value);
-void SetUniform(int32_t location, std::span<const Vector2u> value);
-void SetUniform(int32_t location, std::span<const Vector3f> value);
-void SetUniform(int32_t location, std::span<const Vector3i> value);
-void SetUniform(int32_t location, std::span<const Vector3u> value);
-void SetUniform(int32_t location, std::span<const Vector4f> value);
-void SetUniform(int32_t location, std::span<const Vector4i> value);
-void SetUniform(int32_t location, std::span<const Vector4u> value);
-void SetUniform(int32_t location, std::span<const Matrix4f> value, bool transpose);
+void SetUniform(int32_t location, const Vector2f &value);
+void SetUniform(int32_t location, const Vector2i &value);
+void SetUniform(int32_t location, const Vector2u &value);
+void SetUniform(int32_t location, const Vector3f &value);
+void SetUniform(int32_t location, const Vector3i &value);
+void SetUniform(int32_t location, const Vector3u &value);
+void SetUniform(int32_t location, const Vector4f &value);
+void SetUniform(int32_t location, const Vector4i &value);
+void SetUniform(int32_t location, const Vector4u &value);
+void SetUniform(int32_t location, const Matrix4f &value, bool transpose);
 int32_t GetUniformLocation(Descriptor &program, std::string_view name);
 std::string GetProgramResourceName(Descriptor &program, ProgramInterface interface, uint32_t index, uint32_t name_size);
 std::vector<int32_t> GetProgramResource(Descriptor &program, ProgramInterface interface, uint32_t index,

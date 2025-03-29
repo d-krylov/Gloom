@@ -1,7 +1,8 @@
 set(GLOOM_SOURCES
+  ${PROJECT_SOURCE_DIR}/gloom/graphics/image.cpp
   ${PROJECT_SOURCE_DIR}/gloom/graphics/graphics_types.cpp
   ${PROJECT_SOURCE_DIR}/gloom/graphics/graphics_wrappers.cpp
-  ${PROJECT_SOURCE_DIR}/gloom/graphics/shaders.cpp
+  ${PROJECT_SOURCE_DIR}/gloom/mathematics/shapes.cpp
   ${PROJECT_SOURCE_DIR}/gloom/window/GLFW_window.cpp
   ${PROJECT_SOURCE_DIR}/gloom/common/gloom_tools.cpp
   ${PROJECT_SOURCE_DIR}/external/glad/glad.c

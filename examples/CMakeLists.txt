@@ -2,6 +2,7 @@ set(GLOOM_EXAMPLES
   triangle
   texture
   framebuffer
+  box
 )
 
 foreach(exe ${GLOOM_EXAMPLES})

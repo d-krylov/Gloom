@@ -5,16 +5,6 @@
 
 namespace GL = Gloom;
 
-std::vector<uint32_t> CreateTexture(int32_t width, int32_t height) {
-  std::vector<uint32_t> data(width * height);
-  for (auto x = 0; x < width; x++) {
-    for (auto y = 0; y < height; y++) {
-      data[y * width + x] = GL::GetRGBA(x % 200, y % 200, 0, 255);
-    }
-  }
-  return data;
-}
-
 int main() {
 
   GL::GLFWWindow window("Texture", 800, 600);
@@ -23,7 +13,7 @@ int main() {
   GL::Descriptor vertex_buffer, index_buffer;
   GL::Descriptor texture;
 
-  auto texture_image = CreateTexture(800, 600);
+  auto texture_image = GL::MakeChessTexture(800, 600, 25, 25);
 
   GL::CreateTexture(texture, GL::TextureTarget::TEXTURE_2D);
   GL::CreateTextureStorage(texture, 1, 800, 600, GL::InternalFormat::RGBA8);
@@ -64,8 +54,8 @@ int main() {
 
   GL::CreateBufferStorage<float>(vertex_buffer, GL::BufferStorageMask::DYNAMIC_STORAGE_BIT, data);
   GL::CreateBufferStorage<int32_t>(index_buffer, GL::BufferStorageMask::DYNAMIC_STORAGE_BIT, indices);
-  GL::ShaderSource(vertex_shader, GL::GetPlaneTextureVertexShader());
-  GL::ShaderSource(fragment_shader, GL::GetPlaneTextureFragmentShader());
+  GL::ShaderSource(vertex_shader, GL::LoadFile(GL::GetShadersPath() / "common" / "position_color_uv_2d.vert"));
+  GL::ShaderSource(fragment_shader, GL::LoadFile(GL::GetShadersPath() / "common" / "position_color_uv_2d.frag"));
   GL::CompileShaders(vertex_shader, fragment_shader);
   GL::AttachShaders(program, vertex_shader, fragment_shader);
   GL::LinkProgram(program);

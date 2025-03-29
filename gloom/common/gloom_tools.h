@@ -6,9 +6,8 @@
 namespace Gloom {
 
 std::string LoadFile(const std::filesystem::path &path);
-
-inline const std::filesystem::path GLOOM_ROOT = GLOOM_PROJECT_SOURCE_DIR;
-inline const std::filesystem::path GLOOM_SHADERS_DIR = GLOOM_ROOT / "shaders";
+std::filesystem::path GetRootPath();
+std::filesystem::path GetShadersPath();
 
 } // namespace Gloom
 

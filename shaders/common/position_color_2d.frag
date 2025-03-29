@@ -1,4 +1,3 @@
-R"===(
 #version 460 core
 
 // IN
@@ -11,5 +10,3 @@ layout (location = 0) out vec4 out_color;
 void main() {  
   out_color = vec4(in_color, 1.0);
 }
-
-)==="

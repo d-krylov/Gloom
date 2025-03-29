@@ -15,7 +15,7 @@ FetchContent_MakeAvailable(linalg)
 
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
-  set(CMAKE_BUILD_TYPE RelWithDebInfo)
+  set(CMAKE_BUILD_TYPE Debug)
   
   include(cmake/clang_format.cmake)
 

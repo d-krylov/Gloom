@@ -37,8 +37,8 @@ int main() {
   // clang-format on
 
   GL::CreateBufferStorage<float>(vertex_buffer, GL::BufferStorageMask::DYNAMIC_STORAGE_BIT, data);
-  GL::ShaderSource(vertex_shader, GL::GetPlaneVertexShader());
-  GL::ShaderSource(fragment_shader, GL::GetPlaneFragmentShader());
+  GL::ShaderSource(vertex_shader, GL::LoadFile(GL::GetShadersPath() / "common" / "position_color_2d.vert"));
+  GL::ShaderSource(fragment_shader, GL::LoadFile(GL::GetShadersPath() / "common" / "position_color_2d.frag"));
   GL::CompileShaders(vertex_shader, fragment_shader);
   GL::AttachShaders(program, vertex_shader, fragment_shader);
   GL::LinkProgram(program);

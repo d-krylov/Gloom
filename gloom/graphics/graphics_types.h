@@ -242,6 +242,10 @@ struct DrawElementsIndirectCommand {
 uint32_t GetRGBA(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha);
 uint32_t GetDrawElementsTypeSize(DrawElementsType type);
 
+template <ScopedEnum Enum> auto Cast(Enum type) {
+  return std::to_underlying(type);
+}
+
 } // namespace Gloom
 
 #endif // GRAPHICS_TYPES_H
