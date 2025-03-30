@@ -74,7 +74,7 @@ int main() {
 
     auto name = GL::GetProgramResourceName(program, GL::ProgramInterface::PROGRAM_INPUT, i, ret[0]);
 
-    std::cout << name << std::endl;
+    std::cout << name << " " << GL::GetAttributeTypeName(GL::AttributeType(ret[1])) << std::endl;
   }
 
   auto texture_location = GL::GetUniformLocation(program, "u_texture");

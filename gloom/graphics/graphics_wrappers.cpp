@@ -105,6 +105,32 @@ void SetTextureParameter(Descriptor &texture, TextureParameterName parameter, in
   GL_CALL(glTextureParameteri, texture, Cast(parameter), value);
 }
 
+void BindImageTexture(Descriptor &texture, uint32_t unit, int32_t level, uint32_t layer, BufferAccess access, InternalFormat format) {
+  GL_CALL(glBindImageTexture, unit, texture, level, true, layer, Cast(access), Cast(format));
+}
+
+void BindImageTexture(Descriptor &texture, uint32_t unit, int32_t level, BufferAccess access, InternalFormat format) {
+  GL_CALL(glBindImageTexture, unit, texture, level, false, 0, Cast(access), Cast(format));
+}
+
+uint64_t GetTextureHandle(Descriptor &texture) {
+  return GL_CALL(glGetTextureHandleARB, texture);
+}
+
+// SAMPLER
+
+void CreateSampler(Descriptor &sampler) {
+  GL_CALL(glCreateSamplers, 1, &sampler);
+}
+
+void DeleteSampler(Descriptor &sampler) {
+  GL_CALL(glDeleteSamplers, 1, &sampler);
+}
+
+void BindSampler(Descriptor &sampler, uint32_t unit) {
+  GL_CALL(glBindSampler, unit, sampler);
+}
+
 // BUFFER
 
 void CreateBuffer(Descriptor &buffer) {
@@ -129,6 +155,18 @@ void BindBuffer(Descriptor &buffer, BufferStorageTarget target) {
 
 void BindBufferBase(Descriptor &buffer, BufferTarget target, uint32_t index) {
   GL_CALL(glBindBufferBase, Cast(target), index, buffer);
+}
+
+void FlushBuffer(Descriptor &buffer, uint64_t offset, uint64_t length) {
+  GL_CALL(glFlushMappedNamedBufferRange, buffer, offset, length);
+}
+
+void CopyBuffer(Descriptor &source, Descriptor &destination, int64_t source_offset, int64_t destination_offset, int64_t size) {
+  GL_CALL(glCopyNamedBufferSubData, source, destination, source_offset, destination_offset, size);
+}
+
+void GetBufferParameter(Descriptor &buffer, BufferParameterName parameter_name, int64_t &result) {
+  GL_CALL(glGetNamedBufferParameteri64v, buffer, Cast(parameter_name), &result);
 }
 
 bool UnmapBuffer(Descriptor &buffer) {

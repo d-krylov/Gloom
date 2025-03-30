@@ -20,7 +20,7 @@ template <typename... T> inline void CreateBuffers(T &...buffers) { (CreateBuffe
 template <typename... T> inline void AttachShaders(Descriptor program, T &...shaders) { (AttachShader(program, shaders), ...); }
 // clang-format on
 
-template <typename T = std::byte> inline T *MapBuffer(Descriptor &buffer, int64_t offset, int64_t size, MapBufferAccessMask map_access) {
+template <StandardLayout T> inline T *MapBuffer(Descriptor &buffer, int64_t offset, int64_t size, MapBufferAccessMask map_access) {
   auto mapped_buffer = GL_CALL(glMapNamedBufferRange, buffer, offset, size, Cast(map_access));
   return static_cast<T *>(mapped_buffer);
 }

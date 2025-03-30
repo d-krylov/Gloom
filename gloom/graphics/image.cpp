@@ -2,6 +2,10 @@
 
 namespace Gloom {
 
+uint32_t GetRGBA(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha) {
+  return (alpha << 24) | (blue << 16) | (green << 8) | red;
+}
+
 std::vector<uint32_t> MakeChessTexture(uint32_t width, uint32_t height, uint32_t x_count, uint32_t y_count) {
   std::vector<uint32_t> result(width * height);
   auto x_size = width / x_count;

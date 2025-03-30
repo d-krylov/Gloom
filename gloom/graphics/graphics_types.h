@@ -3,13 +3,31 @@
 
 #include "glad/glad.h"
 #include "gloom/common/gloom_concepts.h"
+#include <string_view>
 
 namespace Gloom {
 
 using Descriptor = GLuint;
 
-enum class ErrorCode {
+// DEBUG
+
+enum class ErrorCode : GLenum {
 #define ERROR_CODE(NAME) NAME = GL_##NAME,
+#include "graphics_types.def"
+};
+
+enum class DebugSource : GLenum {
+#define DEBUG_SOURCE(NAME) NAME = GL_DEBUG_SOURCE_##NAME,
+#include "graphics_types.def"
+};
+
+enum class DebugType : GLenum {
+#define DEBUG_TYPEE(NAME) NAME = GL_DEBUG_TYPE_##NAME,
+#include "graphics_types.def"
+};
+
+enum class DebugSeverity : GLenum {
+#define DEBUG_SEVERITY(NAME) NAME = GL_DEBUG_SEVERITY_##NAME,
 #include "graphics_types.def"
 };
 
@@ -20,12 +38,12 @@ enum class ShaderType : GLenum {
 #include "graphics_types.def"
 };
 
-enum class ProgramProperty {
+enum class ProgramProperty : GLenum {
 #define PROGRAM_PROPERTY(NAME) NAME = GL_##NAME,
 #include "graphics_types.def"
 };
 
-enum class ShaderParameterName {
+enum class ShaderParameterName : GLenum {
 #define SHADER_PARAMETER_NAME(NAME) NAME = GL_##NAME,
 #include "graphics_types.def"
 };
@@ -85,6 +103,8 @@ enum class PolygonMode {
 #include "graphics_types.def"
 };
 
+// BUFFER
+
 enum class BufferStorageMask : GLenum {
 #define BUFFER_STORAGE_MASK(NAME) NAME = GL_##NAME,
 #include "graphics_types.def"
@@ -95,8 +115,18 @@ enum class MapBufferAccessMask : GLenum {
 #include "graphics_types.def"
 };
 
+enum class BufferAccess {
+#define BUFFER_ACCESS(NAME) NAME = GL_##NAME,
+#include "graphics_types.def"
+};
+
 enum class BufferStorageTarget : GLenum {
 #define BUFFER_STORAGE_TARGET(NAME) NAME = GL_##NAME,
+#include "graphics_types.def"
+};
+
+enum class BufferParameterName : GLenum {
+#define BUFFER_PARAMETER_NAME(NAME) NAME = GL_##NAME,
 #include "graphics_types.def"
 };
 
@@ -176,6 +206,11 @@ enum class VertexAttributeLongType : GLenum {
 #include "graphics_types.def"
 };
 
+enum class AttributeType : GLenum {
+#define ATTRIBUTE_TYPE(NAME, COMPONENTS, VERTEX) NAME = GL_##NAME,
+#include "graphics_types.def"
+};
+
 // DRAW
 
 enum class DrawElementsType {
@@ -239,8 +274,21 @@ struct DrawElementsIndirectCommand {
   uint32_t base_instance;
 };
 
-uint32_t GetRGBA(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha);
+struct FormatInformation {
+  PixelFormat pixel_format_;
+};
+
+struct AttributeInformation {
+  uint32_t components_;
+  VertexAttributeType vertex_attribute_type_;
+};
+
 uint32_t GetDrawElementsTypeSize(DrawElementsType type);
+uint32_t GetVertexAttributeSize(VertexAttributeIntegerType type);
+uint32_t GetVertexAttributeSize(VertexAttributeType type);
+uint32_t GetVertexAttributeSize(VertexAttributeLongType type);
+AttributeInformation GetAttributeInformation(AttributeType type);
+std::string_view GetAttributeTypeName(AttributeType type);
 
 template <ScopedEnum Enum> auto Cast(Enum type) {
   return std::to_underlying(type);

@@ -46,6 +46,9 @@ void BindBuffer(Descriptor &buffer, BufferStorageTarget target);
 void CreateEmptyBufferStorage(Descriptor &buffer, BufferStorageMask storage_mask, int64_t size);
 bool UnmapBuffer(Descriptor &buffer);
 void DeleteBuffer(Descriptor &buffer);
+void FlushBuffer(Descriptor &buffer, uint64_t offset, uint64_t length);
+void CopyBuffer(Descriptor &source, Descriptor &destination, int64_t source_offset, int64_t destination_offset, int64_t size);
+void GetBufferParameter(Descriptor &buffer, BufferParameterName parameter_name, int64_t &result);
 
 // PROGRAM
 Descriptor CreateProgram();
@@ -95,8 +98,16 @@ void CreateTexture(Descriptor &texture, TextureTarget target);
 void CreateTextureStorage(Descriptor &texture, int32_t levels, int32_t width, InternalFormat format);
 void CreateTextureStorage(Descriptor &texture, int32_t levels, int32_t width, int32_t height, InternalFormat format);
 void CreateTextureStorage(Descriptor &texture, int32_t levels, int32_t width, int32_t height, int32_t depth, InternalFormat format);
+void BindImageTexture(Descriptor &texture, uint32_t unit, int32_t level, uint32_t layer, BufferAccess access, InternalFormat format);
+void BindImageTexture(Descriptor &texture, uint32_t unit, int32_t level, BufferAccess access, InternalFormat format);
 void GenerateTextureMipmap(Descriptor &texture);
 void SetTextureParameter(Descriptor &texture, TextureParameterName parameter, int32_t value);
+uint64_t GetTextureHandle(Descriptor &texture);
+
+// SAMPLER
+void CreateSampler(Descriptor &sampler);
+void DeleteSampler(Descriptor &sampler);
+void BindSampler(Descriptor &sampler, uint32_t unit);
 
 // FRAMEBUFFER
 void CreateFramebuffer(Descriptor &framebuffer);
