@@ -9,11 +9,15 @@ set(CMAKE_CXX_EXTENSIONS ON)
 find_package(glfw3 REQUIRED)
 find_package(OpenGL REQUIRED)
 
-include(cmake/libraries.cmake)
+include(cmake/cpm.cmake)
 
-FetchContent_MakeAvailable(linalg)
+CPMAddPackage(
+  NAME linalg
+  GITHUB_REPOSITORY sgorsten/linalg
+  GIT_TAG main
+)
 
-if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+if(${PROJECT_IS_TOP_LEVEL})
 
   set(CMAKE_BUILD_TYPE Debug)
   
@@ -24,9 +28,10 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
   add_subdirectory(examples)
 
 else()
-
+  
   set(CMAKE_BUILD_TYPE Release)
 
 endif()
 
+add_subdirectory(external)
 add_subdirectory(gloom)

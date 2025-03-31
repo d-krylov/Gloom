@@ -1,9 +1,10 @@
 #ifndef GRAPHICS_TYPES_H
 #define GRAPHICS_TYPES_H
 
-#include "glad/glad.h"
+#include "external/glad/glad.h"
 #include "gloom/common/gloom_concepts.h"
-#include <string_view>
+#include <string>
+#include <span>
 
 namespace Gloom {
 
@@ -287,6 +288,9 @@ uint32_t GetDrawElementsTypeSize(DrawElementsType type);
 uint32_t GetVertexAttributeSize(VertexAttributeIntegerType type);
 uint32_t GetVertexAttributeSize(VertexAttributeType type);
 uint32_t GetVertexAttributeSize(VertexAttributeLongType type);
+uint32_t GetStride(std::span<const AttributeType> types);
+uint32_t GetAttributeSize(AttributeType type);
+
 AttributeInformation GetAttributeInformation(AttributeType type);
 std::string_view GetAttributeTypeName(AttributeType type);
 

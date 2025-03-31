@@ -3,8 +3,6 @@
 
 #include "gloom/graphics/graphics_types.h"
 #include "gloom/mathematics/mathematics_types.h"
-#include <string>
-#include <span>
 
 namespace Gloom {
 

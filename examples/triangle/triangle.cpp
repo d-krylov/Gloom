@@ -50,7 +50,7 @@ int main() {
 
     GL::SetViewport(0, 0, size.width_, size.height_);
 
-    GL::SetClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    GL::SetClearColor(0.2f, 0.2f, 0.5f, 0.0f);
     GL::Clear(Gloom::ClearBufferMask::COLOR_BUFFER_BIT);
 
     GL::BindVertexArray(vertex_array);

@@ -1,5 +1,6 @@
 #include "graphics_types.h"
 #include <unordered_map>
+#include <numeric>
 
 namespace Gloom {
 
@@ -15,6 +16,15 @@ std::unordered_map<AttributeType, AttributeInformation> attribute_information{
 
 AttributeInformation GetAttributeInformation(AttributeType type) {
   return attribute_information[type];
+}
+
+uint32_t GetAttributeSize(AttributeType type) {
+  auto information = GetAttributeInformation(type);
+  return information.components_ * GetVertexAttributeSize(information.vertex_attribute_type_);
+}
+
+uint32_t GetStride(std::span<const AttributeType> types) {
+  return std::accumulate(types.begin(), types.end(), 0, [](auto total, auto type) { return total + GetAttributeSize(type); });
 }
 
 std::string_view GetAttributeTypeName(AttributeType type) {

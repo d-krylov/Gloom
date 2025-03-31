@@ -1,4 +1,4 @@
-#include "glad/glad.h"
+#include "external/glad/glad.h"
 #include <GLFW/glfw3.h>
 #include "GLFW_window.h"
 
